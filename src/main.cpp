@@ -7,6 +7,13 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
+void processInput(GLFWwindow* window)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
 
 int main(int argc, char const *argv[])
 {
@@ -35,8 +42,14 @@ int main(int argc, char const *argv[])
     // telling the opengl the size of our window
     glViewport(0, 0, 800, 600);
 
+    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     while(!glfwWindowShouldClose(window))
     {
+        // inputs
+        processInput(window);
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        // events and swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
