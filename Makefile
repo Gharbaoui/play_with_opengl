@@ -5,7 +5,7 @@ GLFW_INCLUDE = ./deps/glfw/include
 GLAD_INCLUDE = ./deps/glad/include
 GLAD_SRC = ./deps/glad/src/glad.c
 
-SRC_FILES = ./src/main.cpp
+SRC_FILES = ./src/main.cpp ./src/shader_reader.cpp
 OUT_FILE = ./build/main.elf
 
 GENERATED_FILE = $(OUT_FILE)
