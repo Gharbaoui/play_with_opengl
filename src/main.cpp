@@ -80,47 +80,6 @@ int main(int argc, char const *argv[])
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
-    // shaders
-    const ShaderProgramSources sources = parse_shader("../src/res/shaders/basic_shader.glsl");
-
-    const char* vertex_shader_src = sources.vertex_source.c_str();
-    const char* fragment_shader_src = sources.fragment_source.c_str();
-    unsigned int vertex_shader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex_shader, 1, &vertex_shader_src, NULL);
-    glCompileShader(vertex_shader);
-    int success;
-    char infoLog[512];
-    glGetShaderiv(vertex_shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(vertex_shader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILCATION_FAILED\n" << infoLog << "\n";
-    }
-
-    unsigned int fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
-    glCompileShader(fragment_shader);
-    glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-    if (!success)
-    {
-        glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-        std::cout << "ERROR::FRAGMENT::VERTEX::COMPILCATION_FAILED\n" << infoLog << "\n";
-    }
-
-    unsigned int shader_program;
-    shader_program = glCreateProgram();
-    glAttachShader(shader_program, vertex_shader);
-    glAttachShader(shader_program, fragment_shader);
-    glLinkProgram(shader_program);
-
-    glGetProgramiv(shader_program, GL_LINK_STATUS, &success);
-    if (!success)
-    {
-        glGetProgramInfoLog(shader_program, 512, NULL, infoLog);
-        std::cout << "ERROR::PROGRAM::LINK_FAILED\n" << infoLog << "\n";
-    }
-    glDeleteShader(vertex_shader);
-    glDeleteShader(fragment_shader);
     // at this point shaders are compiled and linked into shader_program
 
     // now data is at the vram and shaders are also, now we just need to define the layout
@@ -129,6 +88,10 @@ int main(int argc, char const *argv[])
 
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *) (3 * sizeof(float)));
+
+    Shader shader("../src/res/shaders/vertex_shader.glsl",
+    "../src/res/shaders/fragment_shader.glsl");
+
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -152,9 +115,8 @@ int main(int argc, char const *argv[])
         // int vertexColorLocation = glGetUniformLocation(shader_program, "our_color");
 
         glBindVertexArray(vao);
-        glUseProgram(shader_program);
-
-        
+        shader.use();
+        shader.set_float("shift_amount", -0.2f);
         // glUniform4f(vertexColorLocation, 0, greenValue, 0, 1.0f);
         // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         
