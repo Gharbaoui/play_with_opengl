@@ -55,7 +55,7 @@ int main(int argc, char const *argv[])
 
         -0.8f, -0.8f, 0.0f, 1.0f, 0.0f, 0.0f, // bottom left
         0.8f, -0.8f, 0.0f,  0.0f, 1.0f, 0.0f, // bottom right
-        0.8f, 0.8f, 0.0f,  0.0f, 0.0f, 1.0f, // up right
+        0.0f, 0.8f, 0.0f,  0.0f, 0.0f, 1.0f, // up right
         -0.8f, 0.8f, 0.0f, 1.0f, 1.0f, 1.0f // up left
     };
 
@@ -116,7 +116,6 @@ int main(int argc, char const *argv[])
 
         glBindVertexArray(vao);
         shader.use();
-        shader.set_float("shift_amount", -0.2f);
         // glUniform4f(vertexColorLocation, 0, greenValue, 0, 1.0f);
         // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
         
