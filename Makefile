@@ -5,13 +5,15 @@ GLFW_INCLUDE = ./deps/glfw/include
 GLAD_INCLUDE = ./deps/glad/include
 GLAD_SRC = ./deps/glad/src/glad.c
 
-SRC_FILES = ./src/main.cpp ./src/shader_reader.cpp
+STB_INCLUDE = ./src/vendor
+
+SRC_FILES = ./src/main.cpp ./src/shader_reader.cpp ./src/vendor/stb_image_loader_impl.cpp
 OUT_FILE = ./build/main.elf
 
 GENERATED_FILE = $(OUT_FILE)
 
 all: $(folder_setup)
-	g++ $(SRC_FILES) $(GLAD_SRC) -I$(GLFW_INCLUDE) -I$(GLAD_INCLUDE) -L$(GLFW_LIB_FOLDER) -l$(GLFW_LIB_NAME) -lGL -o $(OUT_FILE)
+	g++ $(SRC_FILES) $(GLAD_SRC) -I$(GLFW_INCLUDE) -I$(GLAD_INCLUDE) -I$(STB_INCLUDE) -L$(GLFW_LIB_FOLDER) -l$(GLFW_LIB_NAME) -lGL -o $(OUT_FILE)
 
 
 folder_setup:
