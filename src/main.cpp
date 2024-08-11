@@ -57,10 +57,10 @@ int main(int argc, char const *argv[])
         // 0.5f, -0.5f, 0.0f,
         // 0.0f, 0.5f, 0.0f
 
-        -0.8f, -0.8f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-        0.8f, -0.8f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        0.8f, 0.8f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // up right
-        -0.8f, 0.8f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f // up left
+        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
+        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
+        0.5f, 0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // up right
+        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f // up left
     };
 
     // let's setup vertex array object
@@ -161,6 +161,8 @@ int main(int argc, char const *argv[])
     // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 
+
+
     while(!glfwWindowShouldClose(window))
     {
         // inputs
@@ -168,9 +170,11 @@ int main(int argc, char const *argv[])
         glClear(GL_COLOR_BUFFER_BIT);
 
         trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
-        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
+        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+
+        trans = glm::scale(trans, glm::vec3(sin(glfwGetTime()), cos(glfwGetTime()), 1.0f));
         glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
