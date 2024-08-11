@@ -5,8 +5,10 @@ layout (location = 2) in vec2 texture_coordinates;
 out vec3 our_color;
 out vec2 tex_coord;
 
+uniform mat4 transform;
+
 void main(){
-    gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);
+    gl_Position = transform * vec4(pos.x, pos.y, pos.z, 1.0);
     our_color = color;
     tex_coord = texture_coordinates;
 }

@@ -5,6 +5,9 @@
 #include <cmath>
 #include "shader_reader.hpp"
 #include <stb_image.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -148,11 +151,27 @@ int main(int argc, char const *argv[])
     shader.set_int("texture1", 0);
     shader.set_int("texture2", 1);
 
+
+    glm::mat4 trans = glm::mat4(1.0f);
+
+    // trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // trans = glm::scale(trans, glm::vec3(0.5, 0.5f, 0.5f));
+
+    unsigned int transformLoc = glGetUniformLocation(shader.get_id(), "transform");
+    // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+
+
     while(!glfwWindowShouldClose(window))
     {
         // inputs
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT);
+
+        trans = glm::mat4(1.0f);
+        trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f));
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
