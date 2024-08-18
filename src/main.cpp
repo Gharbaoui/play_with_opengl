@@ -63,6 +63,80 @@ int main(int argc, char const *argv[])
         -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f // up left
     };
 
+    std::array cube_vertices {
+        // face 1 facing one
+        // triangle 1
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        // triangle 2
+        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+
+        // face 2 // backwards one
+        // triangle 1
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
+        0.5f, 0.5f,   0.5f, 1.0f, 1.0f,
+        // triangle 2
+        0.5f, 0.5f,   0.5f, 1.0f, 1.0f,
+        -0.5f, 0.5f,  0.5f, 0.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+
+        // face 3
+        -0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
+       -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+       -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+       -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+       -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+       -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+    };
+
+    unsigned int cube_vao;
+    glGenVertexArrays(1, &cube_vao);
+    glBindVertexArray(cube_vao);
+
+    unsigned int cube_vbo;
+    glGenBuffers(1, &cube_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
+    glBufferData(GL_ARRAY_BUFFER, cube_vertices.size() * sizeof(float),
+    cube_vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
+    5 * sizeof(float), (void*)(3 * sizeof(float)));
+    glBindVertexArray(0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    Shader cube_shader("../src/res/shaders/cube_vertex_shader.glsl",
+    "../src/res/shaders/cube_fragment_shader.glsl");
+
+
+    // nothing is bound now
+
     // let's setup vertex array object
     unsigned int vao;
     glGenVertexArrays(1, &vao);
@@ -148,36 +222,84 @@ int main(int argc, char const *argv[])
     glActiveTexture(GL_TEXTURE1);
     glBindTexture(GL_TEXTURE_2D, texture_awesomeface);
 
-    shader.set_int("texture1", 0);
-    shader.set_int("texture2", 1);
+    // shader.set_int("texture1", 0);
+    // shader.set_int("texture2", 1);
+    cube_shader.use();
+    cube_shader.set_int("texture1", 0);
+    cube_shader.set_int("texture2", 1);
+    glUseProgram(0);
 
 
-    glm::mat4 trans = glm::mat4(1.0f);
+    // glm::mat4 trans = glm::mat4(1.0f);
 
     // trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     // trans = glm::scale(trans, glm::vec3(0.5, 0.5f, 0.5f));
 
-    unsigned int transformLoc = glGetUniformLocation(shader.get_id(), "transform");
+    // unsigned int transformLoc = glGetUniformLocation(shader.get_id(), "transform");
     // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
 
 
+    // glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 
+    cube_shader.use();
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
+    
+    glm::mat4 projection;
+    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
+
+    // const unsigned int model_location = glGetUniformLocation(shader.get_id(), "model");
+    const unsigned int view_location = glGetUniformLocation(shader.get_id(), "view");
+    const unsigned int projection_location = glGetUniformLocation(shader.get_id(), "projection");
+
+    // glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+
+
+    std::array cube_positions {
+        glm::vec3(0.0f, 0.0f, 0.0f),
+        glm::vec3( 2.0f,  5.0f, -15.0f),
+        glm::vec3(-1.5f, -2.2f,  -2.5f),
+        glm::vec3(-3.8f, -2.0f, -12.3f),
+        glm::vec3( 2.4f, -0.4f,  -3.5f),
+        glm::vec3(-1.7f,  3.0f,  -7.5f),
+        glm::vec3( 1.3f, -2.0f,  -2.5f),
+        glm::vec3( 1.5f,  2.0f,  -2.5f),
+        glm::vec3( 1.5f,  0.2f,  -1.5f),
+        glm::vec3(-1.3f,  1.0f,  -1.5f)
+    };
+    glEnable(GL_DEPTH_TEST);
 
     while(!glfwWindowShouldClose(window))
     {
         // inputs
         processInput(window);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        trans = glm::mat4(1.0f);
-        trans = glm::translate(trans, glm::vec3(-0.5f, 0.5f, 0.0f));
-        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
-        // trans = glm::scale(trans, glm::vec3(0.5f, 0.5f, 0.5f));
+        // glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::rotate(model, glm::radians(50.0f) * (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
 
-        trans = glm::scale(trans, glm::vec3(sin(glfwGetTime()), cos(glfwGetTime()), 1.0f));
-        glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
+        glBindVertexArray(cube_vao);
+        // cube_shader.use();
+        // glUniformMatrix4fv(glGetUniformLocation(cube_shader.get_id(), "model"), 1, GL_FALSE, glm::value_ptr(model));
 
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        cube_shader.use();
+        unsigned int model_un_location = glGetUniformLocation(cube_shader.get_id(), "model");
+        for (unsigned int i = 0; i < cube_positions.size(); ++i)
+        {
+            glm::mat4 model = glm::mat4(1.0f);
+            model = glm::translate(model, cube_positions[i]);
+            const float angle = 20.f * (i+1);
+            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+            model = glm::scale(model, glm::vec3(0.5f,0.5f,0.5f));
+            glUniformMatrix4fv(model_un_location, 1, GL_FALSE, glm::value_ptr(model));
+            glDrawArrays(GL_TRIANGLES, 0, 36);
+        }
 
         // events and swap buffers
         glfwSwapBuffers(window);
