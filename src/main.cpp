@@ -48,69 +48,61 @@ int main(int argc, char const *argv[])
 
     // telling the opengl the size of our window
     glViewport(0, 0, 800, 600);
-
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glEnable(GL_DEPTH_TEST);
 
-    // vertex data
-    std::array vertices{
-        // -0.5f, -0.5f, 0.0f,
-        // 0.5f, -0.5f, 0.0f,
-        // 0.0f, 0.5f, 0.0f
-
-        -0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 0.0f, 0.0f, // bottom left
-        0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f, 1.0f, 0.0f, // bottom right
-        0.5f, 0.5f, 0.0f,  0.0f, 0.0f, 1.0f, 1.0f, 1.0f, // up right
-        -0.5f, 0.5f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f, 1.0f // up left
-    };
 
     std::array cube_vertices {
         // face 1 facing one
         // triangle 1
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
+        0.5f, 0.5f, -0.5f,   0.0f, 0.0f, 0.0f,
         // triangle 2
-        0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+        0.5f, 0.5f, -0.5f,   0.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
 
 
         // face 2 // backwards one
         // triangle 1
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f, 1.0f, 0.0f,
-        0.5f, 0.5f,   0.5f, 1.0f, 1.0f,
+        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+        0.5f, 0.5f,   0.5f, 1.0f, 0.0f, 0.0f,
         // triangle 2
-        0.5f, 0.5f,   0.5f, 1.0f, 1.0f,
-        -0.5f, 0.5f,  0.5f, 0.0f, 1.0f,
-        -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+        0.5f, 0.5f,   0.5f, 1.0f, 0.0f, 0.0f,
+        -0.5f, 0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
+        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
 
 
         // face 3
-        -0.5f,  0.5f,  0.5f, 1.0f, 0.0f,
-       -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-       -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-       -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-        0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-       -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-       -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
+        -0.5f,  0.5f,  0.5f, 0.0f, 0.3f, 0.7f,
+       -0.5f,  0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
+       -0.5f, -0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
+       -0.5f, -0.5f,  0.5f,  0.0f, 0.3f, 0.7f,
+       -0.5f,  0.5f,  0.5f,  0.0f, 0.3f, 0.7f,
+    
+        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+        0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
+        0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
+
+       -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+       -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
+       -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
+
+       -0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f,
+        0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f,
+        0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
+        0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
+       -0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
+       -0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f
     };
 
     unsigned int cube_vao;
@@ -120,158 +112,37 @@ int main(int argc, char const *argv[])
     unsigned int cube_vbo;
     glGenBuffers(1, &cube_vbo);
     glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
-    glBufferData(GL_ARRAY_BUFFER, cube_vertices.size() * sizeof(float),
-    cube_vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, cube_vertices.size() * sizeof(float), cube_vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(float)), (void*)0);
+
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE,
-    5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(float)), (void*)(3 * sizeof(float)));
 
-    Shader cube_shader("../src/res/shaders/cube_vertex_shader.glsl",
-    "../src/res/shaders/cube_fragment_shader.glsl");
-
-
-    // nothing is bound now
-
-    // let's setup vertex array object
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-
-    // send data to vram
-    unsigned int vbo;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(float), vertices.data(), GL_STATIC_DRAW);
-
-    unsigned int indices[] = {
-        0, 1, 2, // first triangle
-        2, 3, 0 // second triangle
+    Shader cube_shader {
+        "../src/res/shaders/cube_vertex_shader.glsl",
+        "../src/res/shaders/cube_fragment_shader.glsl"
     };
-
-    unsigned int ebo;
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-
-    // at this point shaders are compiled and linked into shader_program
-
-    // now data is at the vram and shaders are also, now we just need to define the layout
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *) (3 * sizeof(float)));
-
-    glEnableVertexAttribArray(2); // for texture coordinates
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-
-    Shader shader("../src/res/shaders/vertex_shader.glsl",
-    "../src/res/shaders/fragment_shader.glsl");
-
-    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
-
-    // texture stuff
-    // reading the data of the image
-    int width, height, nrChannels;
-    unsigned char* data = stbi_load("../src/res/textures/container.jpg", &width, &height, &nrChannels, 0);
-    if (!data)
-        std::cout << "failed to load file 'texture'\n";
-
-    // generate texture
-    unsigned int texture_id;
-    glGenTextures(1, &texture_id);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    unsigned int texture_awesomeface;
-    int w, h, nrc;
-    glGenTextures(1, &texture_awesomeface);
-    glBindTexture(GL_TEXTURE_2D, texture_awesomeface);
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* awesome_data = stbi_load("../src/res/textures/awesomeface.png", &w, &h, &nrc, 0);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, w, h, 0, GL_RGBA, GL_UNSIGNED_BYTE, awesome_data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-
-
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glUseProgram(0);
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    // maybe i need to set wrapping related stuff also
-
-    stbi_image_free(data);
-    stbi_image_free(awesome_data);
-
-    glBindVertexArray(vao);
-    shader.use();
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture_awesomeface);
-
-    // shader.set_int("texture1", 0);
-    // shader.set_int("texture2", 1);
-    cube_shader.use();
-    cube_shader.set_int("texture1", 0);
-    cube_shader.set_int("texture2", 1);
-    glUseProgram(0);
-
-
-    // glm::mat4 trans = glm::mat4(1.0f);
-
-    // trans = glm::rotate(trans, glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // trans = glm::scale(trans, glm::vec3(0.5, 0.5f, 0.5f));
-
-    // unsigned int transformLoc = glGetUniformLocation(shader.get_id(), "transform");
-    // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
-
-    // glm::mat4 model = glm::mat4(1.0f);
-    // model = glm::rotate(model, glm::radians(-50.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-
-    cube_shader.use();
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -2.0f));
     
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
-    // projection = glm::ortho(0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f);
 
-    // const unsigned int model_location = glGetUniformLocation(shader.get_id(), "model");
-    const unsigned int view_location = glGetUniformLocation(shader.get_id(), "view");
-    const unsigned int projection_location = glGetUniformLocation(shader.get_id(), "projection");
+    glm::mat4 view = glm::mat4(1.0f);
+    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
-    // glUniformMatrix4fv(model_location, 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(view_location, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(projection_location, 1, GL_FALSE, glm::value_ptr(projection));
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
+    cube_shader.use();
+    unsigned int model_u_location = glGetUniformLocation(cube_shader.get_id(), "model");
+    unsigned int view_u_location = glGetUniformLocation(cube_shader.get_id(), "view");
+    unsigned int projection_u_location = glGetUniformLocation(cube_shader.get_id(), "projection");
 
-    std::array cube_positions {
-        glm::vec3(0.0f, 0.0f, 0.0f),
-        glm::vec3( 2.0f,  5.0f, -15.0f),
-        glm::vec3(-1.5f, -2.2f,  -2.5f),
-        glm::vec3(-3.8f, -2.0f, -12.3f),
-        glm::vec3( 2.4f, -0.4f,  -3.5f),
-        glm::vec3(-1.7f,  3.0f,  -7.5f),
-        glm::vec3( 1.3f, -2.0f,  -2.5f),
-        glm::vec3( 1.5f,  2.0f,  -2.5f),
-        glm::vec3( 1.5f,  0.2f,  -1.5f),
-        glm::vec3(-1.3f,  1.0f,  -1.5f)
-    };
-    glEnable(GL_DEPTH_TEST);
+    
+    glUniformMatrix4fv(view_u_location, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(projection_u_location, 1, GL_FALSE, glm::value_ptr(projection));
+    
 
     while(!glfwWindowShouldClose(window))
     {
@@ -279,27 +150,15 @@ int main(int argc, char const *argv[])
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::rotate(model, glm::radians(50.0f) * (float)glfwGetTime(), glm::vec3(0.5f, 1.0f, 0.0f));
-
         glBindVertexArray(cube_vao);
-        // cube_shader.use();
-        // glUniformMatrix4fv(glGetUniformLocation(cube_shader.get_id(), "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         cube_shader.use();
-        unsigned int model_un_location = glGetUniformLocation(cube_shader.get_id(), "model");
-        for (unsigned int i = 0; i < cube_positions.size(); ++i)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cube_positions[i]);
-            const float angle = 20.f * (i+1);
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            model = glm::scale(model, glm::vec3(0.5f,0.5f,0.5f));
-            glUniformMatrix4fv(model_un_location, 1, GL_FALSE, glm::value_ptr(model));
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        glm::mat4 model = glm::mat4(1.0f);
+        model=glm::translate(model, glm::vec3(0.5f, 0.5f, 0.5f));
+        model = glm::rotate(model, glm::radians((float)glfwGetTime() * 15.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
+        glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // events and swap buffers
         glfwSwapBuffers(window);
