@@ -9,6 +9,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
@@ -16,9 +21,35 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow* window)
 {
+    constexpr float camera_speed = 0.05f;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
+    }
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+    {
+        camera_pos += camera_speed * camera_front;
+    }
+    if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+    {
+        camera_pos -= camera_speed * camera_front;
+    }
+    if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+    {
+        camera_pos += camera_speed * glm::normalize(glm::cross(camera_front, camera_up));
+    }
+    if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+    {
+        camera_pos += camera_speed * glm::normalize(glm::cross(camera_up, camera_front));
+    }
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+    {
+        camera_pos += camera_up * camera_speed;
+    }
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+    {
+        camera_pos -= camera_up * camera_speed;
     }
 }
 
@@ -129,9 +160,13 @@ int main(int argc, char const *argv[])
     glUseProgram(0);
     
 
-    glm::mat4 view = glm::mat4(1.0f);
-    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
 
+
+    glm::mat4 model = glm::mat4(1.0f);
+    // model = glm::rotate(model, glm::radians(50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
+    model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
+    glm::mat4 view;
+    
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
     cube_shader.use();
@@ -139,10 +174,10 @@ int main(int argc, char const *argv[])
     unsigned int view_u_location = glGetUniformLocation(cube_shader.get_id(), "view");
     unsigned int projection_u_location = glGetUniformLocation(cube_shader.get_id(), "projection");
 
-    
-    glUniformMatrix4fv(view_u_location, 1, GL_FALSE, glm::value_ptr(view));
     glUniformMatrix4fv(projection_u_location, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
     
+
 
     while(!glfwWindowShouldClose(window))
     {
@@ -152,12 +187,9 @@ int main(int argc, char const *argv[])
 
         glBindVertexArray(cube_vao);
         cube_shader.use();
-        glm::mat4 model = glm::mat4(1.0f);
-        model=glm::translate(model, glm::vec3(0.5f, 0.5f, 0.5f));
-        model = glm::rotate(model, glm::radians((float)glfwGetTime() * 15.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-        model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
-        glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
 
+        view = glm::lookAt(camera_pos, camera_front, camera_up);
+        glUniformMatrix4fv(view_u_location, 1, GL_FALSE, glm::value_ptr(view));
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
         // events and swap buffers
