@@ -9,10 +9,87 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
+void glDebugOutput(
+    GLenum source,
+    GLenum type,
+    unsigned int id,
+    GLenum severity,
+    GLsizei length,
+    const char* msg,
+    const void* userParam
+)
+{
+    std::cout << "!!! Debug callback !!!\n";
+    std::cout << "debug message: id " << id << ", " << msg << "\n";
+
+    std::cout << "msg source: ";
+
+    switch (source)
+    {
+    case GL_DEBUG_SOURCE_API:
+            std::cout << "API" << "\n";
+        break;
+    case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+        std::cout << "window system\n";
+        break;
+    case GL_DEBUG_SOURCE_SHADER_COMPILER:
+        std::cout << "shader compiler\n";
+        break;
+    case GL_DEBUG_SOURCE_THIRD_PARTY:
+        std::cout << "third party \n";
+        break;
+    case GL_DEBUG_SOURCE_APPLICATION:
+        std::cout << "application \n";
+        break;
+    case GL_DEBUG_SOURCE_OTHER:
+        std::cout << "other \n";
+        break;
+    default:
+        break;
+    }
+
+    std::cout << "error type: ";
+    switch (type)
+    {
+    case GL_DEBUG_TYPE_ERROR:
+        std::cout << "Error\n";
+        break;
+    case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+        std::cout << "DEPRECATED BEHAVIOR\n";
+        break;
+    case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+        std::cout << "UNDEFINED BEHAVIOR\n";
+        break;
+    case GL_DEBUG_TYPE_PORTABILITY:
+        std::cout << "PORTABILITY\n";
+        break;
+    case GL_DEBUG_TYPE_PERFORMANCE:
+        std::cout << "PERFORMANCE\n";
+        break;
+    case GL_DEBUG_TYPE_MARKER:
+        std::cout << "MARKER\n";
+        break;
+    case GL_DEBUG_TYPE_PUSH_GROUP:
+        std::cout << "PUSH_GROUP\n";
+        break;
+    case GL_DEBUG_TYPE_POP_GROUP:
+        std::cout << "POP_GROUP\n";
+        break;
+    case GL_DEBUG_TYPE_OTHER:
+        std::cout << "OTHER\n";
+        break;
+    default:
+        break;
+    }
+}
+
 glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+float delta_time = 0.0f;
+float last_frame = 0.0f;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -21,7 +98,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow* window)
 {
-    constexpr float camera_speed = 0.05f;
+    const float camera_speed = 2 * delta_time;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
@@ -43,14 +120,6 @@ void processInput(GLFWwindow* window)
     {
         camera_pos += camera_speed * glm::normalize(glm::cross(camera_up, camera_front));
     }
-    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
-    {
-        camera_pos += camera_up * camera_speed;
-    }
-    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
-    {
-        camera_pos -= camera_up * camera_speed;
-    }
 }
 
 int main(int argc, char const *argv[])
@@ -60,8 +129,9 @@ int main(int argc, char const *argv[])
         return 1;
     }
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
     GLFWwindow* window = glfwCreateWindow(800, 600, "learnopengl", NULL, NULL);
     if (window == NULL) {
@@ -81,6 +151,15 @@ int main(int argc, char const *argv[])
     glViewport(0, 0, 800, 600);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_DEBUG_OUTPUT);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    glDebugMessageCallback(glDebugOutput, NULL);
+    glDebugMessageControl(
+        GL_DONT_CARE,
+        GL_DONT_CARE,
+        GL_DONT_CARE,
+        0, NULL, GL_TRUE
+    );
 
 
     std::array cube_vertices {
@@ -182,6 +261,9 @@ int main(int argc, char const *argv[])
     while(!glfwWindowShouldClose(window))
     {
         // inputs
+        const float current_frame = glfwGetTime();
+        delta_time = current_frame - last_frame; // so bigger rendering time bigger delta time
+        last_frame = current_frame;
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
