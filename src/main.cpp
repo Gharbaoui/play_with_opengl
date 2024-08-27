@@ -9,6 +9,8 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
 
 void glDebugOutput(
     GLenum source,
@@ -84,12 +86,51 @@ void glDebugOutput(
     }
 }
 
-glm::vec3 camera_pos = glm::vec3(3.0f, 2.0f, 0.0f);
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 float delta_time = 0.0f;
 float last_frame = 0.0f;
+
+double yaw, pitch;
+float lastX, lastY;
+float xOffset, yOffset;
+bool first_mouse;
+glm::vec3 direction;
+
+void mouse_callback(GLFWwindow *window, double xpos, double ypos)
+{
+    if (first_mouse)
+    {
+        first_mouse = false;
+        lastX = xpos;
+        lastY = ypos;
+    }
+    xOffset = xpos - lastX;
+    yOffset = lastY - ypos;
+
+    lastX = xpos;
+    lastY = ypos;
+    constexpr float sensitivity = 0.1f;
+
+    xOffset *= sensitivity;
+    yOffset *= sensitivity;
+    yaw += xOffset;
+    pitch += yOffset;
+
+    if (pitch < -89.0f)
+        pitch = -89.0f;
+    else if (pitch > 89.0f)
+        pitch = 89.0f;
+
+    direction = glm::vec3{
+        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
+        glm::sin(glm::radians(pitch)),
+        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch))
+    };
+    camera_front = glm::normalize(direction);
+}
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -133,7 +174,7 @@ int main(int argc, char const *argv[])
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, true);
 
-    GLFWwindow* window = glfwCreateWindow(800, 600, "learnopengl", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "learnopengl", NULL, NULL);
     if (window == NULL) {
         std::cerr << "failed to create glfw window\n";
         return 2;
@@ -142,13 +183,20 @@ int main(int argc, char const *argv[])
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+    lastX = SCREEN_WIDTH/2;
+    lastY = SCREEN_HEIGHT/2;
+    first_mouse = true;
+
+    glfwSetCursorPosCallback(window, mouse_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD\n";
         return -1;
     }
 
     // telling the opengl the size of our window
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_DEBUG_OUTPUT);
@@ -246,7 +294,7 @@ int main(int argc, char const *argv[])
     model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
     glm::mat4 view;
     
-    glm::mat4 projection = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
+    glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
     cube_shader.use();
     unsigned int model_u_location = glGetUniformLocation(cube_shader.get_id(), "model");
@@ -255,20 +303,8 @@ int main(int argc, char const *argv[])
 
     glUniformMatrix4fv(projection_u_location, 1, GL_FALSE, glm::value_ptr(projection));
     glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
-    
 
-    double yaw, pitch;
-    yaw = 0;
-    pitch = 0;
 
-    const glm::vec3 direction{
-        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
-        glm::sin(glm::radians(pitch)),
-        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch))
-    };
-    std::cout << "x: " << direction.x << " y: " << direction.y << " z: " << direction.z << std::endl;
-
-    camera_front = glm::normalize(direction);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -276,6 +312,7 @@ int main(int argc, char const *argv[])
         const float current_frame = glfwGetTime();
         delta_time = current_frame - last_frame; // so bigger rendering time bigger delta time
         last_frame = current_frame;
+
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
