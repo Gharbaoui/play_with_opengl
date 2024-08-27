@@ -84,7 +84,7 @@ void glDebugOutput(
     }
 }
 
-glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_pos = glm::vec3(3.0f, 2.0f, 0.0f);
 glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
@@ -162,7 +162,7 @@ int main(int argc, char const *argv[])
     );
 
 
-    std::array cube_vertices {
+    constexpr std::array cube_vertices {
         // face 1 facing one
         // triangle 1
         -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
@@ -257,6 +257,18 @@ int main(int argc, char const *argv[])
     glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
     
 
+    double yaw, pitch;
+    yaw = 0;
+    pitch = 0;
+
+    const glm::vec3 direction{
+        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
+        glm::sin(glm::radians(pitch)),
+        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch))
+    };
+    std::cout << "x: " << direction.x << " y: " << direction.y << " z: " << direction.z << std::endl;
+
+    camera_front = glm::normalize(direction);
 
     while(!glfwWindowShouldClose(window))
     {
