@@ -12,6 +12,20 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+void display_matrix(const glm::mat4 mat)
+{
+    std::cout << "display matrix\n";
+    for (int i = 0; i < 4; ++i)
+    {
+        std::cout << "[";
+        for (int j = 0; j < 3; ++j)
+        {
+            std::cout << mat[j][i] << ", ";
+        }
+        std::cout << mat[3][i] << "]\n";
+    }
+}
+
 void glDebugOutput(
     GLenum source,
     GLenum type,
@@ -90,46 +104,15 @@ glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-float delta_time = 0.0f;
-float last_frame = 0.0f;
+float yaw_angle = -90.0f;
+float pitch_angle = 0.0f;
 
-double yaw, pitch;
-float lastX, lastY;
-float xOffset, yOffset;
-bool first_mouse;
+
 glm::vec3 direction;
 
 void mouse_callback(GLFWwindow *window, double xpos, double ypos)
 {
-    if (first_mouse)
-    {
-        first_mouse = false;
-        lastX = xpos;
-        lastY = ypos;
-    }
-    xOffset = xpos - lastX;
-    yOffset = lastY - ypos;
-
-    lastX = xpos;
-    lastY = ypos;
-    constexpr float sensitivity = 0.1f;
-
-    xOffset *= sensitivity;
-    yOffset *= sensitivity;
-    yaw += xOffset;
-    pitch += yOffset;
-
-    if (pitch < -89.0f)
-        pitch = -89.0f;
-    else if (pitch > 89.0f)
-        pitch = 89.0f;
-
-    direction = glm::vec3{
-        glm::cos(glm::radians(yaw)) * glm::cos(glm::radians(pitch)),
-        glm::sin(glm::radians(pitch)),
-        glm::sin(glm::radians(yaw)) * glm::cos(glm::radians(pitch))
-    };
-    camera_front = glm::normalize(direction);
+   
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
@@ -139,32 +122,87 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow* window)
 {
-    const float camera_speed = 2 * delta_time;
+    const float camera_speed = 0.1;
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
     {
         glfwSetWindowShouldClose(window, true);
     }
 
+    // front
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
         camera_pos += camera_speed * camera_front;
     }
+    // back
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
     {
         camera_pos -= camera_speed * camera_front;
     }
+
+    // right
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
     {
         camera_pos += camera_speed * glm::normalize(glm::cross(camera_front, camera_up));
     }
+    // left
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
     {
         camera_pos += camera_speed * glm::normalize(glm::cross(camera_up, camera_front));
+    }
+
+    // up 
+    if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+    {
+        camera_pos += camera_speed * camera_up;
+    }
+    if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+    {
+        camera_pos -= camera_speed * camera_up;
+    }
+
+    // right rotation
+    if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS)
+    {
+        yaw_angle += glm::radians(1.0f);
+        camera_front = glm::normalize(glm::vec3(
+            cos(yaw_angle) * cos(pitch_angle),
+            sin(pitch_angle),
+            cos(pitch_angle)*sin(yaw_angle)
+        ));
+    }
+    if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
+    {
+        yaw_angle -= glm::radians(1.0f);
+        camera_front = glm::normalize(glm::vec3(
+            cos(yaw_angle) * cos(pitch_angle),
+            sin(pitch_angle),
+            cos(pitch_angle)*sin(yaw_angle)
+        ));
+    }
+    if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+    {
+        pitch_angle += glm::radians(1.0f);
+        camera_front = glm::normalize(glm::vec3(
+            cos(yaw_angle) * cos(pitch_angle),
+            sin(pitch_angle),
+            cos(pitch_angle)*sin(yaw_angle)
+        ));
+    }
+    if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+    {
+        pitch_angle -= glm::radians(1.0f);
+        camera_front = glm::normalize(glm::vec3(
+            cos(yaw_angle) * cos(pitch_angle),
+            sin(pitch_angle),
+            cos(pitch_angle)*sin(yaw_angle)
+        ));
     }
 }
 
 int main(int argc, char const *argv[])
 {
+    yaw_angle = -90.0f;
+    pitch_angle = 0.0f;
     if(!glfwInit()) {
         std::cerr << "glfw init failed\n";
         return 1;
@@ -184,10 +222,6 @@ int main(int argc, char const *argv[])
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
-    lastX = SCREEN_WIDTH/2;
-    lastY = SCREEN_HEIGHT/2;
-    first_mouse = true;
 
     glfwSetCursorPosCallback(window, mouse_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -209,119 +243,148 @@ int main(int argc, char const *argv[])
         0, NULL, GL_TRUE
     );
 
+    constexpr std::array square_vertices{
+        // x    y      z     R     G     B
 
-    constexpr std::array cube_vertices {
-        // face 1 facing one
-        // triangle 1
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
-        0.5f, 0.5f, -0.5f,   0.0f, 0.0f, 0.0f,
-        // triangle 2
-        0.5f, 0.5f, -0.5f,   0.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f, -0.5f,  0.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+        // front face
+        -0.5f, -0.5f, 0.5f, 0.1f, 0.3f, 0.1f,     // 0
+        0.5f, -0.5f, 0.5f, 0.4f, 0.1f, 0.7f,      // 1
+        0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,       // 2
+        -0.5f, 0.5f, 0.5f, 0.3f, 0.5f, 0.0f,      // 3
+
+        // right side
+        0.5f, 0.5f, 0.5f,  1.0f, 0.0f, 0.0f,      // 4
+        0.5f, 0.5f, -0.5f,  1.0f, 0.0f, 0.0f,     // 5
+        0.5f, -0.5f, 0.5f,  1.0f, 0.0f, 0.0f,     // 6
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,    // 7
+        
+        // left side
+        -0.5f, 0.5f, 0.5f,   1.0f,  0.5f, 0.0f,    // 8
+        -0.5f, 0.5f, -0.5f,  1.0f,  0.5f, 0.0f,    // 9
+        -0.5f, -0.5f, 0.5f,  1.0f,  0.5f, 0.0f,    // 10
+        -0.5f, -0.5f, -0.5f, 1.0f,  0.5f, 0.0f,    // 11
+        
+        
+        // bottom face
+         0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,    // 12
+         0.5f, -0.5f, -0.5f,  0.0f, 0.5f, 0.0f,    // 13
+        -0.5f, -0.5f, 0.5f,  .0f,  0.5f, 1.0f,     // 14
+        -0.5f, -0.5f, -0.5f, .0f,  0.5f, 0.0f,     // 15
+        
+        // top face
+         0.5f, 0.5f, 0.5f,   .1f,  0.5f, 0.0f,    // 16
+         0.5f, 0.5f, -0.5f,  .0f,  0.0f, 0.0f,    // 17
+        -0.5f, 0.5f, 0.5f,   .0f,  1.0f, 1.0f,    // 18
+        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,    // 19
 
 
-        // face 2 // backwards one
-        // triangle 1
-        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-        0.5f, 0.5f,   0.5f, 1.0f, 0.0f, 0.0f,
-        // triangle 2
-        0.5f, 0.5f,   0.5f, 1.0f, 0.0f, 0.0f,
-        -0.5f, 0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-        -0.5f, -0.5f, 0.5f, 1.0f, 0.0f, 0.0f,
-
-
-        // face 3
-        -0.5f,  0.5f,  0.5f, 0.0f, 0.3f, 0.7f,
-       -0.5f,  0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
-       -0.5f, -0.5f, -0.5f,  0.0f, 0.3f, 0.7f,
-       -0.5f, -0.5f,  0.5f,  0.0f, 0.3f, 0.7f,
-       -0.5f,  0.5f,  0.5f,  0.0f, 0.3f, 0.7f,
-    
-        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-        0.5f,  0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-        0.5f, -0.5f, -0.5f,  0.0f, 1.0f, 1.0f,
-        0.5f, -0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-        0.5f,  0.5f,  0.5f,  0.0f, 1.0f, 1.0f,
-
-       -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-        0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-       -0.5f, -0.5f,  0.5f,  1.0f, 1.0f, 0.0f,
-       -0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 0.0f,
-
-       -0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f,
-        0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f,
-        0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
-        0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
-       -0.5f,  0.5f,  0.5f,  0.5f, 1.0f, 0.5f,
-       -0.5f,  0.5f, -0.5f,  0.5f, 1.0f, 0.5f
+        // back face
+        -0.5f, -0.5f, -0.5f, 0.3f, 0.1f, 0.7f,    // 20
+        0.5f, -0.5f, -0.5f,  0.4f, 0.2f, 0.3f,    // 21
+        0.5f, 0.5f, -0.5f,   0.5f, 0.1f, 0.5f,    // 22
+        -0.5f, 0.5f, -0.5f,  0.3f, 0.5f, 0.8f     // 23
     };
 
-    unsigned int cube_vao;
-    glGenVertexArrays(1, &cube_vao);
-    glBindVertexArray(cube_vao);
+    constexpr std::array square_indices{
+        // front face
+        0U, 1U, 2U,
+        2U, 3U, 0U,
 
-    unsigned int cube_vbo;
-    glGenBuffers(1, &cube_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
-    glBufferData(GL_ARRAY_BUFFER, cube_vertices.size() * sizeof(float), cube_vertices.data(), GL_STATIC_DRAW);
+        // right face
+        6U, 5U, 4U,
+        6U, 7U, 5U,
+
+        // left face
+        10U, 9U, 8U,
+        10U, 11U, 9U,
+
+        // bottom face
+        14U, 12U, 13U,
+        13U, 15U, 14U,
+
+        // top face
+        18U, 16U, 17U,
+        17U, 19U, 18U,
+
+        // back face
+        20U, 21U, 22U,
+        22U, 23U, 20U
+    };
+
+    // create voa
+    unsigned int square_vao;
+    glGenVertexArrays(1, &square_vao);
+    glBindVertexArray(square_vao);
+    // create vbo
+    unsigned int square_vbo;
+    glGenBuffers(1, &square_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, square_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * square_vertices.size(), square_vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(float)), (void*)0);
-
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, (6 * sizeof(float)), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
-    Shader cube_shader {
+    unsigned int square_ibo;
+    glGenBuffers(1, &square_ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, square_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, square_indices.size() * sizeof(unsigned int), square_indices.data(), GL_STATIC_DRAW);
+
+    Shader shader{
         "../src/res/shaders/cube_vertex_shader.glsl",
-        "../src/res/shaders/cube_fragment_shader.glsl"
-    };
-    glBindVertexArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+        "../src/res/shaders/cube_fragment_shader.glsl"};
+    
     glUseProgram(0);
     
+    // unbind everything
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 
+    glm::mat4 model = glm::mat4(1.0f); // identity matrix
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
 
-    glm::mat4 model = glm::mat4(1.0f);
-    // model = glm::rotate(model, glm::radians(50.0f), glm::vec3(1.0f, 1.0f, 0.0f));
-    model = glm::scale(model, glm::vec3(0.5f, 0.5f, 1.0f));
-    glm::mat4 view;
-    
+    // const float angle = -45.0f;
+    // const float camera_distance = 4.0f;
+
+    // glm::mat4 view = glm::lookAt(
+    //     glm::vec3(0.0f, camera_distance*sin(glm::radians(angle)), camera_distance * cos(glm::radians(angle))),
+    //     glm::vec3(0.0f, 0.0f, 0.0f),
+    //     glm::vec3(0.0f, cos(glm::radians(angle)), -sin(glm::radians(angle)))
+    // );
+
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
-    cube_shader.use();
-    unsigned int model_u_location = glGetUniformLocation(cube_shader.get_id(), "model");
-    unsigned int view_u_location = glGetUniformLocation(cube_shader.get_id(), "view");
-    unsigned int projection_u_location = glGetUniformLocation(cube_shader.get_id(), "projection");
+    shader.use();
+    unsigned int u_view_loc = glGetUniformLocation(shader.get_id(), "view");
+    unsigned int u_model_loc = glGetUniformLocation(shader.get_id(), "model");
+    unsigned int u_projection_loc = glGetUniformLocation(shader.get_id(), "projection");
 
-    glUniformMatrix4fv(projection_u_location, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniformMatrix4fv(model_u_location, 1, GL_FALSE, glm::value_ptr(model));
-
-
+    // glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(u_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
     while(!glfwWindowShouldClose(window))
     {
         // inputs
-        const float current_frame = glfwGetTime();
-        delta_time = current_frame - last_frame; // so bigger rendering time bigger delta time
-        last_frame = current_frame;
 
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindVertexArray(cube_vao);
-        cube_shader.use();
+        glBindVertexArray(square_vao);
+        shader.use();
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, square_ibo);
 
-        view = glm::lookAt(camera_pos, camera_front, camera_up);
-        glUniformMatrix4fv(view_u_location, 1, GL_FALSE, glm::value_ptr(view));
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        const glm::mat4 view = glm::lookAt(
+            camera_pos,
+            camera_pos + camera_front,
+            camera_up
+        );
+        glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
+
+        glDrawElements(GL_TRIANGLES, square_indices.size(), GL_UNSIGNED_INT, NULL);
 
         // events and swap buffers
         glfwSwapBuffers(window);
