@@ -165,43 +165,52 @@ void processInput(GLFWwindow* window)
     {
         yaw_angle += glm::radians(1.0f);
         camera_front = glm::normalize(glm::vec3(
-            cos(yaw_angle) * cos(pitch_angle),
+            sin(yaw_angle) * cos(pitch_angle),
             sin(pitch_angle),
-            cos(pitch_angle)*sin(yaw_angle)
+            -cos(pitch_angle) * cos(yaw_angle)
         ));
     }
     if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS)
     {
         yaw_angle -= glm::radians(1.0f);
         camera_front = glm::normalize(glm::vec3(
-            cos(yaw_angle) * cos(pitch_angle),
+            sin(yaw_angle) * cos(pitch_angle),
             sin(pitch_angle),
-            cos(pitch_angle)*sin(yaw_angle)
+            -cos(pitch_angle) * cos(yaw_angle)
         ));
     }
     if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
     {
         pitch_angle += glm::radians(1.0f);
-        camera_front = glm::normalize(glm::vec3(
-            cos(yaw_angle) * cos(pitch_angle),
+        if (pitch_angle > 89.0f)
+        {
+            pitch_angle = 89.0f;
+        }
+        camera_front = glm::vec3(
+            sin(yaw_angle) * cos(pitch_angle),
             sin(pitch_angle),
-            cos(pitch_angle)*sin(yaw_angle)
-        ));
+            -cos(pitch_angle) * cos(yaw_angle)
+        );
     }
     if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
     {
         pitch_angle -= glm::radians(1.0f);
-        camera_front = glm::normalize(glm::vec3(
-            cos(yaw_angle) * cos(pitch_angle),
+        if (pitch_angle < -89.0f)
+        {
+            pitch_angle = -89.0f;
+        }
+        camera_front = glm::vec3(
+            sin(yaw_angle) * cos(pitch_angle),
             sin(pitch_angle),
-            cos(pitch_angle)*sin(yaw_angle)
-        ));
+            -cos(pitch_angle) * cos(yaw_angle)
+        );
     }
+
 }
 
 int main(int argc, char const *argv[])
 {
-    yaw_angle = -90.0f;
+    yaw_angle = 0.0f;
     pitch_angle = 0.0f;
     if(!glfwInit()) {
         std::cerr << "glfw init failed\n";
