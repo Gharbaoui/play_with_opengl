@@ -221,9 +221,9 @@ int main(int argc, char const *argv[])
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    // glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    glfwSetCursorPosCallback(window, mouse_callback);
+    // glfwSetCursorPosCallback(window, mouse_callback);
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cerr << "Failed to initialize GLAD\n";
         return -1;
@@ -247,42 +247,42 @@ int main(int argc, char const *argv[])
         // x    y      z     R     G     B
 
         // front face
-        -0.5f, -0.5f, 0.5f, 0.1f, 0.3f, 0.1f,     // 0
-        0.5f, -0.5f, 0.5f, 0.4f, 0.1f, 0.7f,      // 1
-        0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f,       // 2
-        -0.5f, 0.5f, 0.5f, 0.3f, 0.5f, 0.0f,      // 3
+        -0.5f, -0.5f, 0.5f,  0.1f, 0.3f, 0.1f, 0.0f, 0.0f,     // 0
+        0.5f, -0.5f, 0.5f,   0.4f, 0.1f, 0.7f, 1.0f, 0.0f,     // 1
+        0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,      // 2
+        -0.5f, 0.5f, 0.5f,   0.3f, 0.5f, 0.0f, 0.0f, 1.0f,       // 3
 
         // right side
-        0.5f, 0.5f, 0.5f,  1.0f, 0.0f, 0.0f,      // 4
-        0.5f, 0.5f, -0.5f,  1.0f, 0.0f, 0.0f,     // 5
-        0.5f, -0.5f, 0.5f,  1.0f, 0.0f, 0.0f,     // 6
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,    // 7
+        0.5f, 0.5f, 0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 1.0f,      // 4
+        0.5f, 0.5f, -0.5f,   1.0f, 0.0f, 0.0f,    1.0f, 1.0f,     // 5
+        0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f,     // 6
+        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,    1.0f, 0.0f,   // 7
         
         // left side
-        -0.5f, 0.5f, 0.5f,   1.0f,  0.5f, 0.0f,    // 8
-        -0.5f, 0.5f, -0.5f,  1.0f,  0.5f, 0.0f,    // 9
-        -0.5f, -0.5f, 0.5f,  1.0f,  0.5f, 0.0f,    // 10
-        -0.5f, -0.5f, -0.5f, 1.0f,  0.5f, 0.0f,    // 11
+        -0.5f, 0.5f, 0.5f,   1.0f,  0.5f, 0.0f,  0.0f, 1.0f,  // 8
+        -0.5f, 0.5f, -0.5f,  1.0f,  0.5f, 0.0f,  1.0f, 1.0f,  // 9
+        -0.5f, -0.5f, 0.5f,  1.0f,  0.5f, 0.0f,  0.0f, 0.0f,  // 10
+        -0.5f, -0.5f, -0.5f, 1.0f,  0.5f, 0.0f,  1.0f, 0.0f,  // 11
         
         
         // bottom face
-         0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,    // 12
-         0.5f, -0.5f, -0.5f,  0.0f, 0.5f, 0.0f,    // 13
-        -0.5f, -0.5f, 0.5f,  .0f,  0.5f, 1.0f,     // 14
-        -0.5f, -0.5f, -0.5f, .0f,  0.5f, 0.0f,     // 15
+         0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,  1.0f, 1.0f,   // 12
+         0.5f, -0.5f, -0.5f,  0.0f, 0.5f, 0.0f,  1.0f, 0.0f,   // 13
+        -0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,  0.0f, 1.0f,   // 14
+        -0.5f, -0.5f, -0.5f,  .0f,  0.5f, 0.0f,  0.0f, 0.0f,   // 15
         
         // top face
-         0.5f, 0.5f, 0.5f,   .1f,  0.5f, 0.0f,    // 16
-         0.5f, 0.5f, -0.5f,  .0f,  0.0f, 0.0f,    // 17
-        -0.5f, 0.5f, 0.5f,   .0f,  1.0f, 1.0f,    // 18
-        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,    // 19
+         0.5f, 0.5f, 0.5f,   .1f,  0.5f, 0.0f,   1.0f, 1.0f,  // 16
+         0.5f, 0.5f, -0.5f,  .0f,  0.0f, 0.0f,   1.0f, 0.0f,  // 17
+        -0.5f, 0.5f, 0.5f,   .0f,  1.0f, 1.0f,   0.0f, 1.0f,  // 18
+        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 19
 
 
         // back face
-        -0.5f, -0.5f, -0.5f, 0.3f, 0.1f, 0.7f,    // 20
-        0.5f, -0.5f, -0.5f,  0.4f, 0.2f, 0.3f,    // 21
-        0.5f, 0.5f, -0.5f,   0.5f, 0.1f, 0.5f,    // 22
-        -0.5f, 0.5f, -0.5f,  0.3f, 0.5f, 0.8f     // 23
+        -0.5f, -0.5f, -0.5f, 0.3f, 0.1f, 0.7f,  0.0f, 0.0f,  // 20
+        0.5f, -0.5f, -0.5f,  0.4f, 0.2f, 0.3f,  1.0f, 0.0f,  // 21
+        0.5f, 0.5f, -0.5f,   0.5f, 0.1f, 0.5f,  1.0f, 1.0f,  // 22
+        -0.5f, 0.5f, -0.5f,  0.3f, 0.5f, 0.8f,   0.0f, 1.0f  // 23
     };
 
     constexpr std::array square_indices{
@@ -322,9 +322,11 @@ int main(int argc, char const *argv[])
     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * square_vertices.size(), square_vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 
     unsigned int square_ibo;
     glGenBuffers(1, &square_ibo);
@@ -341,6 +343,33 @@ int main(int argc, char const *argv[])
     glBindVertexArray(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // textures
+    int width, height, num_channels;
+    stbi_set_flip_vertically_on_load(true);
+    unsigned char* brick_wall_texture_data = stbi_load("../src/res/textures/brick.jpg", &width, &height, &num_channels, 0);
+    if (!brick_wall_texture_data) {
+        std::cout << "could not load texture stbi_load error\n";
+    }
+
+
+    unsigned int brick_wall_texture_obj;
+    glGenTextures(1, &brick_wall_texture_obj);
+    glBindTexture(GL_TEXTURE_2D, brick_wall_texture_obj);
+
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, brick_wall_texture_data);
+    glGenerateMipmap(GL_TEXTURE_2D);
+    stbi_image_free(brick_wall_texture_data);
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, brick_wall_texture_obj);
+    glUniform1i(glGetUniformLocation(shader.get_id(), "our_interface_to_texture_unit"), 0);
+
 
 
     glm::mat4 model = glm::mat4(1.0f); // identity matrix
