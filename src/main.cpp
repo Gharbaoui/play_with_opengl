@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include "object.hpp"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -252,245 +253,217 @@ int main(int argc, char const *argv[])
         0, NULL, GL_TRUE
     );
 
-    constexpr std::array cube_vertices{
-        // x    y      z     R     G     B
 
-        // front face
-        -0.5f, -0.5f, 0.5f,  0.1f, 0.3f, 0.1f, 0.0f, 0.0f,     // 0
-        0.5f, -0.5f, 0.5f,   0.4f, 0.1f, 0.7f, 1.0f, 0.0f,     // 1
-        0.5f, 0.5f, 0.5f,    0.5f, 0.5f, 0.5f, 1.0f, 1.0f,      // 2
-        -0.5f, 0.5f, 0.5f,   0.3f, 0.5f, 0.0f, 0.0f, 1.0f,       // 3
+    Mesh cube{
+        std::vector<Vertex>{
+            // front face vertices
+            Vertex {
+                .position = glm::vec3(-0.5f, -0.5f, 0.5f),
+                .color = glm::vec3(0.1f, 0.3f, 0.1f),
+                .texture_coords = glm::vec2(0.0f, 0.0f)
+            },
+            Vertex {
+                .position = glm::vec3(0.5f, -0.5f, 0.5f),
+                .color = glm::vec3(0.4f, 0.1f, 0.7f),
+                .texture_coords = glm::vec2(1.0f, 0.0f)
+            },
+            Vertex {
+                .position = glm::vec3(0.5f, 0.5f, 0.5f),
+                .color = glm::vec3(0.5f, 0.5f, 0.5f),
+                .texture_coords = glm::vec2(1.0f, 1.0f)
+            },
+            Vertex {
+                .position = glm::vec3(-0.5f, 0.5f, 0.5f),
+                .color = glm::vec3(0.3f, 0.5f, 0.0f),
+                .texture_coords = glm::vec2(0.0f, 1.0f)
+            },
 
-        // right side
-        0.5f, 0.5f, 0.5f,    1.0f, 0.0f, 0.0f,    0.0f, 1.0f,      // 4
-        0.5f, 0.5f, -0.5f,   1.0f, 0.0f, 0.0f,    1.0f, 1.0f,     // 5
-        0.5f, -0.5f, 0.5f,   1.0f, 0.0f, 0.0f,    0.0f, 0.0f,     // 6
-        0.5f, -0.5f, -0.5f,  1.0f, 0.0f, 0.0f,    1.0f, 0.0f,   // 7
-        
-        // left side
-        -0.5f, 0.5f, 0.5f,   1.0f,  0.5f, 0.0f,  0.0f, 1.0f,  // 8
-        -0.5f, 0.5f, -0.5f,  1.0f,  0.5f, 0.0f,  1.0f, 1.0f,  // 9
-        -0.5f, -0.5f, 0.5f,  1.0f,  0.5f, 0.0f,  0.0f, 0.0f,  // 10
-        -0.5f, -0.5f, -0.5f, 1.0f,  0.5f, 0.0f,  1.0f, 0.0f,  // 11
-        
-        
-        // bottom face
-         0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,  1.0f, 1.0f,   // 12
-         0.5f, -0.5f, -0.5f,  0.0f, 0.5f, 0.0f,  1.0f, 0.0f,   // 13
-        -0.5f, -0.5f, 0.5f,   .0f,  0.5f, 1.0f,  0.0f, 1.0f,   // 14
-        -0.5f, -0.5f, -0.5f,  .0f,  0.5f, 0.0f,  0.0f, 0.0f,   // 15
-        
-        // top face
-         0.5f, 0.5f, 0.5f,   .1f,  0.5f, 0.0f,   1.0f, 1.0f,  // 16
-         0.5f, 0.5f, -0.5f,  .0f,  0.0f, 0.0f,   1.0f, 0.0f,  // 17
-        -0.5f, 0.5f, 0.5f,   .0f,  1.0f, 1.0f,   0.0f, 1.0f,  // 18
-        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 19
+            // right face
+            Vertex{
+			    glm::vec3(0.5f,0.5f, 0.5f),
+			    glm::vec3(1.0f,0.0f,0.0f),
+			    glm::vec2(0.0f,1.0f)
+		    },
+		    Vertex{
+			    glm::vec3(0.5f,0.5f, -0.5f),
+			    glm::vec3(1.0f,0.0f,0.0f),
+			    glm::vec2(1.0f,1.0f)
+		    },
+		    Vertex{
+			    glm::vec3(0.5f,-0.5f, 0.5f),
+			    glm::vec3(1.0f,0.0f,0.0f),
+			    glm::vec2(0.0f,0.0f)
+		    },
+		    Vertex{
+			    glm::vec3(0.5f,-0.5f, -0.5f),
+			    glm::vec3(1.0f,0.0f,0.0f),
+			    glm::vec2(1.0f,0.0f)
+		    },
 
+            // left side
+            Vertex{
+                glm::vec3(-0.5f,0.5f, 0.5f),
+                glm::vec3(1.0f,0.5f,0.0f),
+                glm::vec2(0.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,0.5f, -0.5f),
+                glm::vec3(1.0f,0.5f,0.0f),
+                glm::vec2(1.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,-0.5f, 0.5f),
+                glm::vec3(1.0f,0.5f,0.0f),
+                glm::vec2(0.0f,0.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,-0.5f, -0.5f),
+                glm::vec3(1.0f,0.5f,0.0f),
+                glm::vec2(1.0f,0.0f)
+            },
 
-        // back face
-        -0.5f, -0.5f, -0.5f, 0.3f, 0.1f, 0.7f,  0.0f, 0.0f,  // 20
-        0.5f, -0.5f, -0.5f,  0.4f, 0.2f, 0.3f,  1.0f, 0.0f,  // 21
-        0.5f, 0.5f, -0.5f,   0.5f, 0.1f, 0.5f,  1.0f, 1.0f,  // 22
-        -0.5f, 0.5f, -0.5f,  0.3f, 0.5f, 0.8f,   0.0f, 1.0f  // 23
+            // bottom face
+            Vertex{
+                glm::vec3(0.5f,-0.5f, 0.5f),
+                glm::vec3(.0f,0.5f,1.0f),
+                glm::vec2(1.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(0.5f,-0.5f, -0.5f),
+                glm::vec3(0.0f,0.5f,0.0f),
+                glm::vec2(1.0f,0.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,-0.5f, 0.5f),
+                glm::vec3(.0f,0.5f,1.0f),
+                glm::vec2(0.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,-0.5f, -0.5f),
+                glm::vec3(.0f,0.5f,0.0f),
+                glm::vec2(0.0f,0.0f)
+            },
+
+            // top face
+            Vertex{
+                glm::vec3(0.5f,0.5f, 0.5f),
+                glm::vec3(.1f,0.5f,0.0f),
+                glm::vec2(1.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(0.5f,0.5f, -0.5f),
+                glm::vec3(.0f,0.0f,0.0f),
+                glm::vec2(1.0f,0.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,0.5f, 0.5f),
+                glm::vec3(.0f,1.0f,1.0f),
+                glm::vec2(0.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,0.5f, -0.5f),
+                glm::vec3(1.0f,1.0f,1.0f),
+                glm::vec2(0.0f,0.0f)
+            },
+            // back face
+            Vertex{
+                glm::vec3(-0.5f,-0.5f, -0.5f),
+                glm::vec3(0.3f,0.1f,0.7f),
+                glm::vec2(0.0f,0.0f)
+            },
+            Vertex{
+                glm::vec3(0.5f,-0.5f, -0.5f),
+                glm::vec3(0.4f,0.2f,0.3f),
+                glm::vec2(1.0f,0.0f)
+            },
+            Vertex{
+                glm::vec3(0.5f,0.5f, -0.5f),
+                glm::vec3(0.5f,0.1f,0.5f),
+                glm::vec2(1.0f,1.0f)
+            },
+            Vertex{
+                glm::vec3(-0.5f,0.5f, -0.5f),
+                glm::vec3(0.3f,0.5f,0.8f),
+                glm::vec2(0.0f,1.0f)
+            }
+        },
+        std::vector<unsigned int> {
+            // front face
+            0U, 1U, 2U,
+            2U, 3U, 0U,
+            // rigt face
+            6U, 5U, 4U,
+            6U, 7U, 5U,
+            // left face
+            10U, 9U, 8U,
+            10U, 11U, 9U,
+            // bottom face
+            14U, 12U, 13U,
+            13U, 15U, 14U,
+            // top face
+            18U, 16U, 17U,
+            17U, 19U, 18U,
+
+            // back face
+            20U, 21U, 22U,
+            22U, 23U, 20U
+        },
+        std::vector<Face> {
+            Face {
+                .start_index = 0,
+                .end_index = 0 + 5,
+                .has_texture = true,
+                .texture_index = 0
+            },
+            Face {
+                .start_index = 6,
+                .end_index = 6 + 5,
+                .has_texture = true,
+                .texture_index = 1
+            },
+            Face {
+                .start_index = 12,
+                .end_index = 12 + 5,
+                .has_texture = true,
+                .texture_index = 2
+            },
+            Face {
+                .start_index = 18,
+                .end_index = 18 + 5,
+                .has_texture = true,
+                .texture_index = 3
+            },
+            Face {
+                .start_index = 24,
+                .end_index = 24 + 5,
+                .has_texture = true,
+                .texture_index = 4
+            },
+            Face {
+                .start_index = 30,
+                .end_index = 30 + 5,
+                .has_texture = true,
+                .texture_index = 5
+            },
+        },
+        std::vector<std::string> {
+            "../src/res/textures/256x256/Roofs/Roofs_10-256x256.png",
+            "../src/res/textures/brick.jpg",
+            "../src/res/textures/container.jpg",
+            "../src/res/textures/256x256/Bricks/Bricks_05-256x256.png",
+            "../src/res/textures/256x256/Wood/Wood_01-256x256.png",
+            "../src/res/textures/256x256/Grass/Grass_12-256x256.png",
+        }
     };
-
-    constexpr std::array cube_indices{
-        // front face
-        0U, 1U, 2U,
-        2U, 3U, 0U,
-
-        // right face
-        6U, 5U, 4U,
-        6U, 7U, 5U,
-
-        // left face
-        10U, 9U, 8U,
-        10U, 11U, 9U,
-
-        // bottom face
-        14U, 12U, 13U,
-        13U, 15U, 14U,
-
-        // top face
-        18U, 16U, 17U,
-        17U, 19U, 18U,
-
-        // back face
-        20U, 21U, 22U,
-        22U, 23U, 20U
-    };
-
-    // create voa
-    unsigned int cube_vao;
-    glGenVertexArrays(1, &cube_vao);
-    glBindVertexArray(cube_vao);
-    // create vbo
-    unsigned int cube_vbo;
-    glGenBuffers(1, &cube_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cube_vertices.size(), cube_vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-
-    unsigned int cube_ibo;
-    glGenBuffers(1, &cube_ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube_indices.size() * sizeof(unsigned int), cube_indices.data(), GL_STATIC_DRAW);
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // start of light source
-    constexpr std::array light_source_vertices{
-        // x    y      z     R     G     B
-
-        // front face
-        -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f,   0.0f, 0.0f,     // 0
-        0.5f, -0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,     // 1
-        0.5f, 0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f,      // 2
-        -0.5f, 0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,       // 3
-
-        // right side
-        0.5f, 0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f,      // 4
-        0.5f, 0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,     // 5
-        0.5f, -0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,     // 6
-        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   // 7
-        
-        // left side
-        -0.5f, 0.5f, 0.5f,   1.0f,  1.0f, 1.0f,  0.0f, 1.0f,  // 8
-        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 1.0f,  // 9
-        -0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 10
-        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  1.0f, 0.0f,  // 11
-        
-        
-        // bottom face
-         0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 1.0f,   // 12
-         0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  1.0f, 0.0f,   // 13
-        -0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 1.0f,   // 14
-        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  0.0f, 0.0f,   // 15
-        
-        // top face
-         0.5f, 0.5f, 0.5f,   1.0f,   1.0f, 1.0f,  1.0f, 1.0f,  // 16
-         0.5f, 0.5f, -0.5f,  1.0f,   1.0f, 1.0f,  1.0f, 0.0f,  // 17
-        -0.5f, 0.5f, 0.5f,   1.0f,   1.0f, 1.0f,  0.0f, 1.0f,  // 18
-        -0.5f, 0.5f, -0.5f,  1.0f,   1.0f, 1.0f,  0.0f, 0.0f,  // 19
-
-
-        // back face
-        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 20
-        0.5f, -0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 0.0f,  // 21
-        0.5f, 0.5f, -0.5f,   1.0f,  1.0f, 1.0f,  1.0f, 1.0f,  // 22
-        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,   0.0f, 1.0f  // 23
-    };
-
-    constexpr std::array light_source_indices{
-        // front face
-        0U, 1U, 2U,
-        2U, 3U, 0U,
-
-        // right face
-        6U, 5U, 4U,
-        6U, 7U, 5U,
-
-        // left face
-        10U, 9U, 8U,
-        10U, 11U, 9U,
-
-        // bottom face
-        14U, 12U, 13U,
-        13U, 15U, 14U,
-
-        // top face
-        18U, 16U, 17U,
-        17U, 19U, 18U,
-
-        // back face
-        20U, 21U, 22U,
-        22U, 23U, 20U
-    };
-
-    // create voa
-    unsigned int light_source_vao;
-    glGenVertexArrays(1, &light_source_vao);
-    glBindVertexArray(light_source_vao);
-    // create vbo
-    unsigned int light_source_vbo;
-    glGenBuffers(1, &light_source_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, light_source_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * light_source_vertices.size(), light_source_vertices.data(), GL_STATIC_DRAW);
-
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(1);
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(2);
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
-
-    unsigned int light_source_ibo;
-    glGenBuffers(1, &light_source_ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, light_source_ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, light_source_indices.size() * sizeof(unsigned int), light_source_indices.data(), GL_STATIC_DRAW);
-    // end of light source
 
 
     Shader shader{
         "../src/res/shaders/cube_vertex_shader.glsl",
         "../src/res/shaders/cube_fragment_shader.glsl"};
     
-    glUseProgram(0);
-    
-    // unbind everything
-    glBindVertexArray(0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // textures
-    int width, height, num_channels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char* brick_wall_texture_data = stbi_load("../src/res/textures/brick.jpg", &width, &height, &num_channels, 0);
-    if (!brick_wall_texture_data) {
-        std::cout << "could not load texture stbi_load error\n";
-    }
-
-
-    unsigned int brick_wall_texture_obj;
-    glGenTextures(1, &brick_wall_texture_obj);
-    glBindTexture(GL_TEXTURE_2D, brick_wall_texture_obj);
-
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, brick_wall_texture_data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-    stbi_image_free(brick_wall_texture_data);
-
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, brick_wall_texture_obj);
-    glUniform1i(glGetUniformLocation(shader.get_id(), "our_interface_to_texture_unit"), 0);
-
-
 
     glm::mat4 cube_model = glm::mat4(1.0f); // identity matrix
-    glm::mat4 light_source_model = glm::mat4(1.0f);
-    cube_model = glm::translate(cube_model, glm::vec3(-2.0f, 0.0f, -1.0f));
-    light_source_model = glm::translate(light_source_model, glm::vec3(1.0f, 0.0f, -2.0f));
-    light_source_model = glm::scale(light_source_model, glm::vec3(0.3f, 0.3f, 0.3f));
-
-    // const float angle = -45.0f;
-    // const float camera_distance = 4.0f;
-
-    // glm::mat4 view = glm::lookAt(
-    //     glm::vec3(0.0f, camera_distance*sin(glm::radians(angle)), camera_distance * cos(glm::radians(angle))),
-    //     glm::vec3(0.0f, 0.0f, 0.0f),
-    //     glm::vec3(0.0f, cos(glm::radians(angle)), -sin(glm::radians(angle)))
-    // );
+    cube_model = glm::translate(cube_model, glm::vec3(0.0f, 0.0f, -1.0f));
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCREEN_WIDTH/(float)SCREEN_HEIGHT, 0.1f, 100.0f);
 
@@ -499,10 +472,7 @@ int main(int argc, char const *argv[])
     unsigned int u_model_loc = glGetUniformLocation(shader.get_id(), "model");
     unsigned int u_projection_loc = glGetUniformLocation(shader.get_id(), "projection");
 
-    // glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
-    // glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(cube_model));
     glUniformMatrix4fv(u_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
-    glUniform3f(glGetUniformLocation(shader.get_id(), "light_color"), 0.0f, 0.7f, 0.3f);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -510,11 +480,9 @@ int main(int argc, char const *argv[])
 
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glBindVertexArray(cube_vao);
+        
+        
         shader.use();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_ibo);
-
         const glm::mat4 view = glm::lookAt(
             camera_pos,
             camera_pos + camera_front,
@@ -523,12 +491,7 @@ int main(int argc, char const *argv[])
         glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
         glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(cube_model));
 
-        glDrawElements(GL_TRIANGLES, cube_indices.size(), GL_UNSIGNED_INT, NULL);
-        glBindVertexArray(light_source_vao);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, light_source_ibo);
-        glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(light_source_model));
-        glDrawElements(GL_TRIANGLES, light_source_indices.size(), GL_UNSIGNED_INT, NULL);
-
+        cube.draw(shader);
         // events and swap buffers
         glfwSwapBuffers(window);
         glfwPollEvents();

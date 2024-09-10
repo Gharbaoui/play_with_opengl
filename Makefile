@@ -7,7 +7,7 @@ GLAD_SRC = ./deps/glad/src/glad.c
 
 STB_INCLUDE = ./src/vendor
 
-SRC_FILES = ./src/main.cpp ./src/shader_reader.cpp ./src/vendor/stb_image_loader_impl.cpp
+SRC_FILES = ./src/main.cpp ./src/shader_reader.cpp ./src/vendor/stb_image_loader_impl.cpp ./src/object.cpp
 OBJ_FILES = $(patsubst %.cpp, ./build/%.o, $(notdir $(SRC_FILES)))
 OUT_FILE = ./build/main.elf
 
