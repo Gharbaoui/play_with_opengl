@@ -252,7 +252,7 @@ int main(int argc, char const *argv[])
         0, NULL, GL_TRUE
     );
 
-    constexpr std::array square_vertices{
+    constexpr std::array cube_vertices{
         // x    y      z     R     G     B
 
         // front face
@@ -294,7 +294,7 @@ int main(int argc, char const *argv[])
         -0.5f, 0.5f, -0.5f,  0.3f, 0.5f, 0.8f,   0.0f, 1.0f  // 23
     };
 
-    constexpr std::array square_indices{
+    constexpr std::array cube_indices{
         // front face
         0U, 1U, 2U,
         2U, 3U, 0U,
@@ -321,14 +321,14 @@ int main(int argc, char const *argv[])
     };
 
     // create voa
-    unsigned int square_vao;
-    glGenVertexArrays(1, &square_vao);
-    glBindVertexArray(square_vao);
+    unsigned int cube_vao;
+    glGenVertexArrays(1, &cube_vao);
+    glBindVertexArray(cube_vao);
     // create vbo
-    unsigned int square_vbo;
-    glGenBuffers(1, &square_vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, square_vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * square_vertices.size(), square_vertices.data(), GL_STATIC_DRAW);
+    unsigned int cube_vbo;
+    glGenBuffers(1, &cube_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, cube_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * cube_vertices.size(), cube_vertices.data(), GL_STATIC_DRAW);
 
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -337,10 +337,106 @@ int main(int argc, char const *argv[])
     glEnableVertexAttribArray(2);
     glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
 
-    unsigned int square_ibo;
-    glGenBuffers(1, &square_ibo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, square_ibo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, square_indices.size() * sizeof(unsigned int), square_indices.data(), GL_STATIC_DRAW);
+    unsigned int cube_ibo;
+    glGenBuffers(1, &cube_ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, cube_indices.size() * sizeof(unsigned int), cube_indices.data(), GL_STATIC_DRAW);
+    glBindVertexArray(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // start of light source
+    constexpr std::array light_source_vertices{
+        // x    y      z     R     G     B
+
+        // front face
+        -0.5f, -0.5f, 0.5f,  1.0f, 1.0f, 1.0f,   0.0f, 0.0f,     // 0
+        0.5f, -0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 0.0f,     // 1
+        0.5f, 0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   1.0f, 1.0f,      // 2
+        -0.5f, 0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 1.0f,       // 3
+
+        // right side
+        0.5f, 0.5f, 0.5f,    1.0f, 1.0f, 1.0f,   0.0f, 1.0f,      // 4
+        0.5f, 0.5f, -0.5f,   1.0f, 1.0f, 1.0f,   1.0f, 1.0f,     // 5
+        0.5f, -0.5f, 0.5f,   1.0f, 1.0f, 1.0f,   0.0f, 0.0f,     // 6
+        0.5f, -0.5f, -0.5f,  1.0f, 1.0f, 1.0f,   1.0f, 0.0f,   // 7
+        
+        // left side
+        -0.5f, 0.5f, 0.5f,   1.0f,  1.0f, 1.0f,  0.0f, 1.0f,  // 8
+        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 1.0f,  // 9
+        -0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 10
+        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  1.0f, 0.0f,  // 11
+        
+        
+        // bottom face
+         0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 1.0f,   // 12
+         0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  1.0f, 0.0f,   // 13
+        -0.5f, -0.5f, 0.5f,  1.0f,  1.0f, 1.0f,  0.0f, 1.0f,   // 14
+        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  0.0f, 0.0f,   // 15
+        
+        // top face
+         0.5f, 0.5f, 0.5f,   1.0f,   1.0f, 1.0f,  1.0f, 1.0f,  // 16
+         0.5f, 0.5f, -0.5f,  1.0f,   1.0f, 1.0f,  1.0f, 0.0f,  // 17
+        -0.5f, 0.5f, 0.5f,   1.0f,   1.0f, 1.0f,  0.0f, 1.0f,  // 18
+        -0.5f, 0.5f, -0.5f,  1.0f,   1.0f, 1.0f,  0.0f, 0.0f,  // 19
+
+
+        // back face
+        -0.5f, -0.5f, -0.5f, 1.0f,  1.0f, 1.0f,  0.0f, 0.0f,  // 20
+        0.5f, -0.5f, -0.5f,  1.0f,  1.0f, 1.0f,  1.0f, 0.0f,  // 21
+        0.5f, 0.5f, -0.5f,   1.0f,  1.0f, 1.0f,  1.0f, 1.0f,  // 22
+        -0.5f, 0.5f, -0.5f,  1.0f,  1.0f, 1.0f,   0.0f, 1.0f  // 23
+    };
+
+    constexpr std::array light_source_indices{
+        // front face
+        0U, 1U, 2U,
+        2U, 3U, 0U,
+
+        // right face
+        6U, 5U, 4U,
+        6U, 7U, 5U,
+
+        // left face
+        10U, 9U, 8U,
+        10U, 11U, 9U,
+
+        // bottom face
+        14U, 12U, 13U,
+        13U, 15U, 14U,
+
+        // top face
+        18U, 16U, 17U,
+        17U, 19U, 18U,
+
+        // back face
+        20U, 21U, 22U,
+        22U, 23U, 20U
+    };
+
+    // create voa
+    unsigned int light_source_vao;
+    glGenVertexArrays(1, &light_source_vao);
+    glBindVertexArray(light_source_vao);
+    // create vbo
+    unsigned int light_source_vbo;
+    glGenBuffers(1, &light_source_vbo);
+    glBindBuffer(GL_ARRAY_BUFFER, light_source_vbo);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * light_source_vertices.size(), light_source_vertices.data(), GL_STATIC_DRAW);
+
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void *)(6 * sizeof(float)));
+
+    unsigned int light_source_ibo;
+    glGenBuffers(1, &light_source_ibo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, light_source_ibo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, light_source_indices.size() * sizeof(unsigned int), light_source_indices.data(), GL_STATIC_DRAW);
+    // end of light source
+
 
     Shader shader{
         "../src/res/shaders/cube_vertex_shader.glsl",
@@ -381,8 +477,11 @@ int main(int argc, char const *argv[])
 
 
 
-    glm::mat4 model = glm::mat4(1.0f); // identity matrix
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, -1.0f));
+    glm::mat4 cube_model = glm::mat4(1.0f); // identity matrix
+    glm::mat4 light_source_model = glm::mat4(1.0f);
+    cube_model = glm::translate(cube_model, glm::vec3(-2.0f, 0.0f, -1.0f));
+    light_source_model = glm::translate(light_source_model, glm::vec3(1.0f, 0.0f, -2.0f));
+    light_source_model = glm::scale(light_source_model, glm::vec3(0.3f, 0.3f, 0.3f));
 
     // const float angle = -45.0f;
     // const float camera_distance = 4.0f;
@@ -401,8 +500,9 @@ int main(int argc, char const *argv[])
     unsigned int u_projection_loc = glGetUniformLocation(shader.get_id(), "projection");
 
     // glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(model));
+    // glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(cube_model));
     glUniformMatrix4fv(u_projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+    glUniform3f(glGetUniformLocation(shader.get_id(), "light_color"), 0.0f, 0.7f, 0.3f);
 
     while(!glfwWindowShouldClose(window))
     {
@@ -411,9 +511,9 @@ int main(int argc, char const *argv[])
         processInput(window);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        glBindVertexArray(square_vao);
+        glBindVertexArray(cube_vao);
         shader.use();
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, square_ibo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, cube_ibo);
 
         const glm::mat4 view = glm::lookAt(
             camera_pos,
@@ -421,8 +521,13 @@ int main(int argc, char const *argv[])
             camera_up
         );
         glUniformMatrix4fv(u_view_loc, 1, GL_FALSE, glm::value_ptr(view));
+        glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(cube_model));
 
-        glDrawElements(GL_TRIANGLES, square_indices.size(), GL_UNSIGNED_INT, NULL);
+        glDrawElements(GL_TRIANGLES, cube_indices.size(), GL_UNSIGNED_INT, NULL);
+        glBindVertexArray(light_source_vao);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, light_source_ibo);
+        glUniformMatrix4fv(u_model_loc, 1, GL_FALSE, glm::value_ptr(light_source_model));
+        glDrawElements(GL_TRIANGLES, light_source_indices.size(), GL_UNSIGNED_INT, NULL);
 
         // events and swap buffers
         glfwSwapBuffers(window);
